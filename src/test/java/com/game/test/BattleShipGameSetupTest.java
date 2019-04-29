@@ -12,12 +12,16 @@ import com.game.exception.BattleShipOutOfBoundsException;
 public class BattleShipGameSetupTest {
 
 	private BattleShipGame bsg;
-	private String input;
+	private String gameInitInput;
+	private String player1Steps;
+	private String player2Steps;
 
 	@Before
 	public void setUp() throws Exception {
 		bsg = new BattleShipGame();
-		input = "5 E\n" + "2\n" + "Q 1 1 A1 B2\n" + "P 2 1 D4 C3";
+		gameInitInput = "5 E\n" + "2\n" + "Q 1 1 A1 B2\n" + "P 2 1 D4 C3";
+		player1Steps = "A1 B2 B2 B3";
+		player2Steps = "A1 B2 B3 A1 D1 E1 D4 D4 D5 D5";
 	}
 
 	@After
@@ -74,14 +78,28 @@ public class BattleShipGameSetupTest {
 
 	@Test
 	public void shouldSetupQnPTypeBattleships() throws BattleShipOutOfBoundsException {
-		Scanner sc = new Scanner(input);
+		Scanner sc = new Scanner(gameInitInput);
 		bsg.setBattleAreaWidth(sc.nextInt());
 		bsg.setBattleAreaHeight(sc.next().charAt(0));
 		bsg.setNoOfBattleships(sc.nextInt());
 		bsg.createBattleArea();
-		bsg.placeQnPTypeBattleships(sc.next(), sc.nextInt(), sc.nextInt(), sc.next(), sc.next());
-		bsg.placeQnPTypeBattleships(sc.next(), sc.nextInt(), sc.nextInt(), sc.next(), sc.next());
-
+		for (int i = 0; i < bsg.getNoOfBattleships(); i++) {
+			bsg.placeQnPTypeBattleships(sc.next(), sc.nextInt(), sc.nextInt(), sc.next(), sc.next());
+		}
+		sc.close();
 	}
 
+	@Test
+	public void shouldStartBattleShipGame() throws BattleShipOutOfBoundsException {
+		Scanner sc = new Scanner(gameInitInput);
+		bsg.setBattleAreaWidth(sc.nextInt());
+		bsg.setBattleAreaHeight(sc.next().charAt(0));
+		bsg.setNoOfBattleships(sc.nextInt());
+		bsg.createBattleArea();
+		for (int i = 0; i < bsg.getNoOfBattleships(); i++) {
+			bsg.placeQnPTypeBattleships(sc.next(), sc.nextInt(), sc.nextInt(), sc.next(), sc.next());
+		}
+		bsg.startBattleShipGame(player1Steps, player2Steps);
+		sc.close();
+	}
 }
