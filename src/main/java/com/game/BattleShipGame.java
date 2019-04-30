@@ -74,7 +74,7 @@ public class BattleShipGame {
 	public void placeQnPTypeBattleships(String shipType, int shipWidth, int shipHeight, String player1Coordinate,
 			String player2Coordinate) {
 
-		for (int i = 0; i < shipWidth; i++) {
+		for (int i = 0; i < shipWidth - 1; i++) {
 			if (shipType.charAt(0) == 'Q') {
 				player1BattleArea[GameUtilities.getYCoord(player1Coordinate)][GameUtilities.getXCoord(player1Coordinate)
 						+ i] = new Cell(Cell.CellType.Q);
@@ -95,7 +95,7 @@ public class BattleShipGame {
 			}
 		}
 
-		for (int i = 0; i < shipHeight; i++) {
+		for (int i = 0; i < shipHeight - 1; i++) {
 			if (shipType.charAt(0) == 'Q') {
 				player1BattleArea[GameUtilities.getYCoord(player1Coordinate) + i][GameUtilities
 						.getXCoord(player1Coordinate)] = new Cell(Cell.CellType.Q);
@@ -118,9 +118,10 @@ public class BattleShipGame {
 
 	}
 
-	public void startBattleShipGame(String player1Steps, String player2Steps) {
+	public String startBattleShipGame(String player1Steps, String player2Steps) {
 		String[] p1StepsArr = player1Steps.split(" ");
 		String[] p2StepsArr = player2Steps.split(" ");
+		String winner = null;
 
 		boolean p1Turn = true;
 		boolean p2Turn = false;
@@ -134,7 +135,8 @@ public class BattleShipGame {
 
 			} else if (p1Turn == true && targetCell("Player-2", p1StepsArr[p1]) == true) {
 				if (getWiningPosition("Player-2")) {
-					System.out.println("Player-1 won the battle");
+					winner = "Player-1 won the battle";
+					System.out.println(winner);
 					break;
 				} else {
 					System.out.println("Player-1 fires a missile with target " + p1StepsArr[p1] + " which got hit");
@@ -156,7 +158,8 @@ public class BattleShipGame {
 
 			} else if (p2Turn == true && targetCell("Player-1", p2StepsArr[p2]) == true) {
 				if (getWiningPosition("Player-1")) {
-					System.out.println("Player-2 won the battle");
+					winner = "Player-2 won the battle";
+					System.out.println(winner);
 					break;
 				} else {
 					System.out.println("Player-2 fires a missile with target " + p2StepsArr[p2] + " which got hit");
@@ -173,6 +176,7 @@ public class BattleShipGame {
 				break;
 			}
 		}
+		return winner;
 
 	}
 

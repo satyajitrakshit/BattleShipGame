@@ -1,5 +1,7 @@
 package com.game.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Scanner;
 
 import org.junit.After;
@@ -99,7 +101,7 @@ public class BattleShipGameSetupTest {
 		for (int i = 0; i < bsg.getNoOfBattleships(); i++) {
 			bsg.placeQnPTypeBattleships(sc.next(), sc.nextInt(), sc.nextInt(), sc.next(), sc.next());
 		}
-		bsg.startBattleShipGame(player1Steps, player2Steps);
+		assertEquals("Player-2 won the battle", bsg.startBattleShipGame(player1Steps, player2Steps));
 		sc.close();
 	}
 }
