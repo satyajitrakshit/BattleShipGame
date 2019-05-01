@@ -3,10 +3,17 @@ package com.game;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.game.exception.BattleShipOutOfBoundsException;
-import com.game.util.GameUtilities;
+import com.game.util.GameUtils;
 
 public class BattleShipGame {
+
+	final static Logger logger = Logger.getLogger(BattleShipGame.class);
+
+	private static final String PLAYER1 = "Player-1";
+	private static final String PLAYER2 = "Player-2";
 
 	private int battleAreaWidth;
 	private int battleAreaHeight;
@@ -76,20 +83,20 @@ public class BattleShipGame {
 
 		for (int i = 0; i < shipWidth - 1; i++) {
 			if (shipType.charAt(0) == 'Q') {
-				player1BattleArea[GameUtilities.getYCoord(player1Coordinate)][GameUtilities.getXCoord(player1Coordinate)
+				player1BattleArea[GameUtils.getYCoord(player1Coordinate)][GameUtils.getXCoord(player1Coordinate)
 						+ i] = new Cell(Cell.CellType.Q);
 				player1Map.put("Q", player1Map.get("Q") + 2);
 
-				player2BattleArea[GameUtilities.getYCoord(player2Coordinate)][GameUtilities.getXCoord(player2Coordinate)
+				player2BattleArea[GameUtils.getYCoord(player2Coordinate)][GameUtils.getXCoord(player2Coordinate)
 						+ i] = new Cell(Cell.CellType.Q);
 				player2Map.put("Q", player2Map.get("Q") + 2);
 
 			} else if (shipType.charAt(0) == 'P') {
-				player1BattleArea[GameUtilities.getYCoord(player1Coordinate)][GameUtilities.getXCoord(player1Coordinate)
+				player1BattleArea[GameUtils.getYCoord(player1Coordinate)][GameUtils.getXCoord(player1Coordinate)
 						+ i] = new Cell(Cell.CellType.P);
 				player1Map.put("P", player1Map.get("P") + 1);
 
-				player2BattleArea[GameUtilities.getYCoord(player2Coordinate)][GameUtilities.getXCoord(player2Coordinate)
+				player2BattleArea[GameUtils.getYCoord(player2Coordinate)][GameUtils.getXCoord(player2Coordinate)
 						+ i] = new Cell(Cell.CellType.P);
 				player2Map.put("P", player2Map.get("P") + 1);
 			}
@@ -97,20 +104,20 @@ public class BattleShipGame {
 
 		for (int i = 0; i < shipHeight - 1; i++) {
 			if (shipType.charAt(0) == 'Q') {
-				player1BattleArea[GameUtilities.getYCoord(player1Coordinate) + i][GameUtilities
+				player1BattleArea[GameUtils.getYCoord(player1Coordinate) + i][GameUtils
 						.getXCoord(player1Coordinate)] = new Cell(Cell.CellType.Q);
 				player1Map.put("Q", player1Map.get("Q") + 2);
 
-				player2BattleArea[GameUtilities.getYCoord(player2Coordinate) + i][GameUtilities
+				player2BattleArea[GameUtils.getYCoord(player2Coordinate) + i][GameUtils
 						.getXCoord(player2Coordinate)] = new Cell(Cell.CellType.Q);
 				player2Map.put("Q", player2Map.get("Q") + 2);
 
 			} else if (shipType.charAt(0) == 'P') {
-				player1BattleArea[GameUtilities.getYCoord(player1Coordinate) + i][GameUtilities
+				player1BattleArea[GameUtils.getYCoord(player1Coordinate) + i][GameUtils
 						.getXCoord(player1Coordinate)] = new Cell(Cell.CellType.P);
 				player1Map.put("P", player1Map.get("P") + 1);
 
-				player2BattleArea[GameUtilities.getYCoord(player2Coordinate) + i][GameUtilities
+				player2BattleArea[GameUtils.getYCoord(player2Coordinate) + i][GameUtils
 						.getXCoord(player2Coordinate)] = new Cell(Cell.CellType.P);
 				player2Map.put("P", player2Map.get("P") + 1);
 			}
@@ -125,48 +132,47 @@ public class BattleShipGame {
 
 		boolean p1Turn = true;
 		boolean p2Turn = false;
-		int p1 = 0, p2 = 0;
+		int p1 = 0;
+		int p2 = 0;
 		while (true) {
 
-			if (p1Turn == true && p1 == (p1StepsArr.length)) {
-				System.out.println("Player-1 has no more missiles left to launch");
+			if (p1Turn && p1 == (p1StepsArr.length)) {
+				logger.info("Player-1 has no more missiles left to launch");
 				p1Turn = false;
 				p2Turn = true;
 
-			} else if (p1Turn == true && targetCell("Player-2", p1StepsArr[p1]) == true) {
-				if (getWiningPosition("Player-2")) {
+			} else if (p1Turn && targetCell(PLAYER2, p1StepsArr[p1])) {
+				if (getWiningPosition(PLAYER2)) {
 					winner = "Player-1 won the battle";
-					System.out.println(winner);
+					logger.info(winner);
 					break;
 				} else {
-					System.out.println("Player-1 fires a missile with target " + p1StepsArr[p1] + " which got hit");
+					logger.info("Player-1 fires a missile with target " + p1StepsArr[p1] + " which got hit");
 					p1++;
 				}
-			} else if (p1Turn == true && targetCell("Player-2", p1StepsArr[p1]) == false) {
-				System.out.println("Player-1 fires a missile with target " + p1StepsArr[p1] + " which got miss");
+			} else if (p1Turn && !targetCell(PLAYER2, p1StepsArr[p1])) {
+				logger.info("Player-1 fires a missile with target " + p1StepsArr[p1] + " which got miss");
 				p1Turn = false;
 				p2Turn = true;
 				p1++;
 			}
 
-			// "--------------------------------------------------------------------------------";
-
-			if (p2Turn == true && p2 == (p2StepsArr.length)) {
-				System.out.println("Player-2 has no more missiles left to launch");
+			if (p2Turn && p2 == (p2StepsArr.length)) {
+				logger.info("Player-2 has no more missiles left to launch");
 				p1Turn = true;
 				p2Turn = false;
 
-			} else if (p2Turn == true && targetCell("Player-1", p2StepsArr[p2]) == true) {
-				if (getWiningPosition("Player-1")) {
+			} else if (p2Turn && targetCell(PLAYER1, p2StepsArr[p2])) {
+				if (getWiningPosition(PLAYER1)) {
 					winner = "Player-2 won the battle";
-					System.out.println(winner);
+					logger.info(winner);
 					break;
 				} else {
-					System.out.println("Player-2 fires a missile with target " + p2StepsArr[p2] + " which got hit");
+					logger.info("Player-2 fires a missile with target " + p2StepsArr[p2] + " which got hit");
 					p2++;
 				}
-			} else if (p2Turn == true && targetCell("Player-1", p2StepsArr[p2]) == false) {
-				System.out.println("Player-2 fires a missile with target " + p2StepsArr[p2] + " which got miss");
+			} else if (p2Turn && !targetCell(PLAYER1, p2StepsArr[p2])) {
+				logger.info("Player-2 fires a missile with target " + p2StepsArr[p2] + " which got miss");
 				p1Turn = true;
 				p2Turn = false;
 				p2++;
@@ -181,33 +187,29 @@ public class BattleShipGame {
 	}
 
 	private boolean getWiningPosition(String player) {
-		if (player == "Player-1") {
-			if (player1Map.get("Q") == 0 && player1Map.get("P") == 0) {
-				return true;
-			}
+		if (player.equals(PLAYER1) && player1Map.get("Q") == 0 && player1Map.get("P") == 0) {
+			return true;
 		}
-		if (player == "Player-2") {
-			if (player2Map.get("Q") == 0 && player2Map.get("P") == 0) {
-				return true;
-			}
+		if (player.equals(PLAYER2) && player2Map.get("Q") == 0 && player2Map.get("P") == 0) {
+			return true;
 		}
 		return false;
 	}
 
 	private boolean targetCell(String player, String coordinate) {
 		Cell cell = null;
-		if (player == "Player-1") {
-			cell = player1BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)];
+		if (player.equals(PLAYER1)) {
+			cell = player1BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)];
 			if (cell != null) {
 				cell.hitCnt++;
 				if (cell.cellType.equals(Cell.CellType.Q) && cell.hitCnt == 2) {
-					player1BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = null;
+					player1BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = null;
 				} else {
-					player1BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = cell;
+					player1BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = cell;
 				}
 
 				if (cell.cellType.equals(Cell.CellType.P) && cell.hitCnt == 1) {
-					player1BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = null;
+					player1BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = null;
 				}
 
 				if (cell.cellType.equals(Cell.CellType.Q)) {
@@ -219,18 +221,18 @@ public class BattleShipGame {
 			}
 			return false;
 
-		} else if (player == "Player-2") {
-			cell = player2BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)];
+		} else if (player.equals(PLAYER2)) {
+			cell = player2BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)];
 			if (cell != null) {
 				cell.hitCnt++;
 				if (cell.cellType.equals(Cell.CellType.Q) && cell.hitCnt == 2) {
-					player2BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = null;
+					player2BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = null;
 				} else {
-					player2BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = cell;
+					player2BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = cell;
 				}
 
 				if (cell.cellType.equals(Cell.CellType.P) && cell.hitCnt == 1) {
-					player2BattleArea[GameUtilities.getYCoord(coordinate)][GameUtilities.getXCoord(coordinate)] = null;
+					player2BattleArea[GameUtils.getYCoord(coordinate)][GameUtils.getXCoord(coordinate)] = null;
 				}
 
 				if (cell.cellType.equals(Cell.CellType.Q)) {
